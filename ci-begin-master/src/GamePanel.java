@@ -1,4 +1,5 @@
 import tklibs.Mathx;
+import tklibs.Player;
 import tklibs.SpriteUtils;
 
 import javax.swing.*;
@@ -18,6 +19,8 @@ public class GamePanel extends JPanel {
 
 
     public GamePanel() {
+
+        this.player = new Player()
         backgroundImage = SpriteUtils.loadImage("assets/images/background/0.png");
         backgroundX = 0;
         backgroundY = backgroundImage.getHeight()*(-1)+600;

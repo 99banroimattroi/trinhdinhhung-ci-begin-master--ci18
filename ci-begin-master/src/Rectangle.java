@@ -6,7 +6,6 @@ public class Rectangle {
     public Rectangle() {
         this(new Vector2D(0, 0), 1, 1);
     }
-
     public Rectangle(double x, double y, int width, int height) {
         this(new Vector2D(x, y), width, height);
     }
@@ -15,6 +14,22 @@ public class Rectangle {
         this.position = position;
         this.width = width;
         this.height = height;
+    }
+
+    double top() {
+        return this.position.y;
+    }
+
+    double bottom()  {
+        return  this.top() + this.height;
+    }
+
+    double left() {
+        return this.position.x;
+    }
+
+    double right() {
+        return  this.left() + this.width;
     }
 
     /**
@@ -33,7 +48,13 @@ public class Rectangle {
         width = this.width;
         height = this.height;
         // TODO: 1. remove default return statement and fill logic check intersects 'this' and 'other'
-        //return false;
+        //return false;{
+
+        return this.right() >= other.left()
+                && this.left() <= other.right()
+                && this.bottom() >= other.top()
+                && this.top() <= other.bottom()
+
         Rectangle rec = new Rectangle(position,width,height);
 
 
@@ -68,4 +89,6 @@ public class Rectangle {
         // true - true
         // false - false
     }
+
+
 }
