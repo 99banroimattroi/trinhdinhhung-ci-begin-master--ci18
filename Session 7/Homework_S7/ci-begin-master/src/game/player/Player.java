@@ -1,0 +1,126 @@
+package game.player;
+
+import game.GameObject;
+import game.Item;
+import game.KeyEventPress;
+import game.Vector2D;
+import game.physics.BoxCollider;
+import game.rendercer.Renderer;
+import tklibs.Mathx;
+import tklibs.SpriteUtils;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+
+public class Player extends GameObject {
+    public int hp;
+    public boolean immune;
+
+    public Player() {
+        rendecer = new Renderer("assets/images/players/straight");
+//        position = new Vector2D(200, 500);
+        position.set(200, 500);
+        hitBox = new BoxCollider(this, 40, 48);
+//        hitBox = new BoxCollider(this,this.rendecer.image.getWidth(),this.rendecer.image.getHeight());
+        hp= 3;
+        immune = false;
+    }
+
+    public void takeDamage(int damage) {
+        if (!immune) {
+            hp -= damage;
+            if(hp <= 0){
+                hp = 0;
+                this.deactive();
+            } else {
+                immune = true;
+            }
+        }
+
+    }
+    int renderCount =0;
+    @Override
+    public void render(Graphics g) {
+        if (immune) {
+            renderCount++;
+            if (renderCount % 3 == 0) {
+                super.render(g);
+            }
+        } else {
+            super.render(g);
+        }
+
+    }
+
+    int count = 0; // dem so khung hinh
+    @Override
+    public void run() { // 60 fps >> 60 vien dan dc tao ra 1s >> 3 vien duoc tao ra 1s
+        this.move();
+        this.limitPosition();
+        this.fire();
+        this.checkImmune();
+        this.checkItem();
+    }
+
+    public void checkItem(){
+        Item item = GameObject.findIntersects(Item.class, hitBox);
+        if (item != null){
+            item.deactive();
+            hp += 1;
+        }
+    }
+    int immuneCount = 0;
+    private void checkImmune() {
+        if(immune) {
+            immuneCount++;
+            if (immuneCount >120) {
+                immune = false;
+            }
+        } else {
+            immuneCount = 0;
+        }
+    }
+
+    private void fire() {
+        count++;
+        if(KeyEventPress.isFirePress && count > 20) {
+//            PlayerBullet bullet = new PlayerBullet();
+            PlayerBullet bullet = GameObject.recycle(PlayerBullet.class);
+            bullet.position.set(this.position.x, this.position.y);
+            bullet.velocity.setAngle(Math.toRadians(-90));
+
+            PlayerBullet bullet2 = GameObject.recycle(PlayerBullet.class);
+            bullet2.position.set(this.position.x - 10, this.position.y);
+            bullet2.velocity.setAngle(Math.toRadians(-135));
+
+            PlayerBullet bullet3 = GameObject.recycle(PlayerBullet.class);
+            bullet3.position.set(this.position.x + 10, this.position.y);
+            bullet3.velocity.setAngle(Math.toRadians(-45));
+
+            count = 0;
+        }
+    }
+
+    private void limitPosition() {
+        position.x = Mathx.clamp(position.x, 0, 384 - 32);
+        position.y = Mathx.clamp(position.y, 0, 600 - 48);
+    }
+
+    private void move() {
+        if(KeyEventPress.isUpPress) {
+            position.y--;
+        }
+        if(KeyEventPress.isLeftPress) {
+            position.x--;
+        }
+        if(KeyEventPress.isRightPress) {
+            position.x++;
+        }
+        if(KeyEventPress.isDownPress) {
+            position.y++;
+        }
+    }
+
+
+}
